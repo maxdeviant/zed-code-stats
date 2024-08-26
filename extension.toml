@@ -8,4 +8,16 @@ repository = "https://github.com/maxdeviant/zed-code-stats"
 
 [language_servers.code-stats-ls]
 name = "Code::Stats LS"
-languages = ["Rust"]
+languages = [
+    "Gleam",
+    "HTML",
+    "JSON",
+    "JSONC",
+    "JavaScript",
+    "Markdown",
+    "Rust",
+    "TOML",
+    "TSX",
+    "TypeScript",
+    "YAML",
+]
