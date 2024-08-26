@@ -1,6 +1,6 @@
 id = "code-stats"
 name = "Code::Stats"
-description = "Integration with Code::Stats"
+description = "Tracks coding XP with Code::Stats."
 version = "0.1.0"
 schema_version = 1
 authors = ["Marshall Bowers <elliott.codes@gmail.com>"]
