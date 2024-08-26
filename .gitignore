@@ -1,0 +1,11 @@
+#
+# zed-code-stats
+#
+
+*.wasm
+
+#
+# Rust
+#
+
+/target

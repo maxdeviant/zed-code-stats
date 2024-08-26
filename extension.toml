@@ -1,0 +1,11 @@
+id = "code-stats"
+name = "Code::Stats"
+description = "Integration with Code::Stats"
+version = "0.1.0"
+schema_version = 1
+authors = ["Marshall Bowers <elliott.codes@gmail.com>"]
+repository = "https://github.com/maxdeviant/zed-code-stats"
+
+[language_servers.code-stats-ls]
+name = "Code::Stats LS"
+languages = ["Rust"]

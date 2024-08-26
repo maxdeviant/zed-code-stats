@@ -1,2 +1,3 @@
 # zed-code-stats
-A Code::Stats extension for Zed
+
+A [Code::Stats](https://codestats.net/) extension for [Zed](https://zed.dev/).
