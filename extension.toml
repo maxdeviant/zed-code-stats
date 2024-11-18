@@ -54,6 +54,7 @@ languages = [
     "TOML",
     "TSX",
     "TypeScript",
+    "Vue.js",
     "WIT",
     "XML",
     "YAML",
