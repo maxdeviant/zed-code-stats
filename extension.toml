@@ -30,6 +30,7 @@ languages = [
     "FSharp",
     "GDScript",
     "Gleam",
+    "GLSL",
     "Go",
     "GraphQL",
     "Haskell",
