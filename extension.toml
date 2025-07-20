@@ -69,6 +69,7 @@ languages = [
     "TSX",
     "TypeScript",
     "Vue.js",
+    "WGSL",
     "WIT",
     "XML",
     "YAML",
