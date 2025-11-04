@@ -12,7 +12,13 @@ impl CodeStatsExtension {
         language_server_id: &LanguageServerId,
         worktree: &Worktree,
     ) -> Result<String> {
-        if let Some(path) = worktree.which("code-stats-ls") {
+        let (platform, arch) = zed::current_platform();
+        let binary_name = match platform {
+            zed::Os::Mac | zed::Os::Linux => "code-stats-ls",
+            zed::Os::Windows => "code-stats-ls.exe",
+        };
+
+        if let Some(path) = worktree.which(&binary_name) {
             return Ok(path);
         }
 
@@ -34,7 +40,6 @@ impl CodeStatsExtension {
             },
         )?;
 
-        let (platform, arch) = zed::current_platform();
         let target_triple = format!(
             "code-stats-ls-{arch}-{os}",
             arch = match arch {
@@ -64,7 +69,13 @@ impl CodeStatsExtension {
             .ok_or_else(|| format!("no asset found matching {:?}", asset_name))?;
 
         let version_dir = format!("code-stats-ls-{}", release.version);
-        let binary_path = format!("{version_dir}/{target_triple}/code-stats-ls");
+
+        // Windows have a different archive structure, as documented at:
+        // https://axodotdev.github.io/cargo-dist/book/artifacts/archives.html#archive-contents
+        let binary_path = match platform {
+            zed::Os::Windows => format!("{version_dir}/{}", binary_name),
+            _ => format!("{version_dir}/{target_triple}/{}", binary_name),
+        };
 
         if !fs::metadata(&binary_path).map_or(false, |stat| stat.is_file()) {
             zed::set_language_server_installation_status(
@@ -72,10 +83,15 @@ impl CodeStatsExtension {
                 &zed::LanguageServerInstallationStatus::Downloading,
             );
 
+            let download_type = match platform {
+                zed::Os::Windows => zed::DownloadedFileType::Zip,
+                _ => zed::DownloadedFileType::GzipTar,
+            };
+
             zed::download_file(
                 &asset.download_url,
                 &version_dir,
-                zed::DownloadedFileType::GzipTar,
+                download_type,
             )
             .map_err(|err| format!("failed to download file: {err}"))?;
 
