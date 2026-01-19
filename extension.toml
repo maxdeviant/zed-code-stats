@@ -3,7 +3,7 @@ name = "Code::Stats"
 description = "Tracks coding XP with Code::Stats."
 version = "0.2.7"
 schema_version = 1
-authors = ["Marshall Bowers <elliott.codes@gmail.com>"]
+authors = ["Marshall Bowers <me@maxdeviant.com>"]
 repository = "https://github.com/maxdeviant/zed-code-stats"
 
 [language_servers.code-stats-ls]
