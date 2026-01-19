@@ -64,7 +64,18 @@ impl CodeStatsExtension {
             .ok_or_else(|| format!("no asset found matching {:?}", asset_name))?;
 
         let version_dir = format!("code-stats-ls-{}", release.version);
-        let binary_path = format!("{version_dir}/{target_triple}/code-stats-ls");
+        let (binary_path, file_type) = match platform {
+            zed::Os::Mac | zed::Os::Linux => (
+                format!("{version_dir}/{target_triple}/code-stats-ls"),
+                zed::DownloadedFileType::GzipTar,
+            ),
+            // Windows uses a different archive structure, as documented in:
+            // https://axodotdev.github.io/cargo-dist/book/artifacts/archives.html#archive-contents
+            zed::Os::Windows => (
+                format!("{version_dir}/code-stats-ls.exe"),
+                zed::DownloadedFileType::Zip,
+            ),
+        };
 
         if !fs::metadata(&binary_path).map_or(false, |stat| stat.is_file()) {
             zed::set_language_server_installation_status(
@@ -72,12 +83,8 @@ impl CodeStatsExtension {
                 &zed::LanguageServerInstallationStatus::Downloading,
             );
 
-            zed::download_file(
-                &asset.download_url,
-                &version_dir,
-                zed::DownloadedFileType::GzipTar,
-            )
-            .map_err(|err| format!("failed to download file: {err}"))?;
+            zed::download_file(&asset.download_url, &version_dir, file_type)
+                .map_err(|err| format!("failed to download file: {err}"))?;
 
             let entries = fs::read_dir(".")
                 .map_err(|err| format!("failed to list working directory {err}"))?;
