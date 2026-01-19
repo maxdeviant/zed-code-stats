@@ -64,7 +64,6 @@ impl CodeStatsExtension {
             .ok_or_else(|| format!("no asset found matching {:?}", asset_name))?;
 
         let version_dir = format!("code-stats-ls-{}", release.version);
-
         let (binary_path, file_type) = match platform {
             zed::Os::Mac | zed::Os::Linux => (
                 format!("{version_dir}/{target_triple}/code-stats-ls"),
