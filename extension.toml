@@ -53,6 +53,7 @@ languages = [
     "Nim",
     "Nix",
     "OCaml",
+    "Prolog",
     "PureScript",
     "Python",
     "Racket",
