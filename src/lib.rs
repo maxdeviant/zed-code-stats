@@ -12,13 +12,7 @@ impl CodeStatsExtension {
         language_server_id: &LanguageServerId,
         worktree: &Worktree,
     ) -> Result<String> {
-        let (platform, arch) = zed::current_platform();
-        let binary_name = match platform {
-            zed::Os::Mac | zed::Os::Linux => "code-stats-ls",
-            zed::Os::Windows => "code-stats-ls.exe",
-        };
-
-        if let Some(path) = worktree.which(&binary_name) {
+        if let Some(path) = worktree.which("code-stats-ls") {
             return Ok(path);
         }
 
@@ -40,6 +34,7 @@ impl CodeStatsExtension {
             },
         )?;
 
+        let (platform, arch) = zed::current_platform();
         let target_triple = format!(
             "code-stats-ls-{arch}-{os}",
             arch = match arch {
@@ -70,11 +65,17 @@ impl CodeStatsExtension {
 
         let version_dir = format!("code-stats-ls-{}", release.version);
 
-        // Windows have a different archive structure, as documented at:
-        // https://axodotdev.github.io/cargo-dist/book/artifacts/archives.html#archive-contents
-        let binary_path = match platform {
-            zed::Os::Windows => format!("{version_dir}/{}", binary_name),
-            _ => format!("{version_dir}/{target_triple}/{}", binary_name),
+        let (binary_path, file_type) = match platform {
+            zed::Os::Mac | zed::Os::Linux => (
+                format!("{version_dir}/{target_triple}/code-stats-ls"),
+                zed::DownloadedFileType::GzipTar,
+            ),
+            // Windows uses a different archive structure, as documented in:
+            // https://axodotdev.github.io/cargo-dist/book/artifacts/archives.html#archive-contents
+            zed::Os::Windows => (
+                format!("{version_dir}/code-stats-ls.exe"),
+                zed::DownloadedFileType::Zip,
+            ),
         };
 
         if !fs::metadata(&binary_path).map_or(false, |stat| stat.is_file()) {
@@ -83,17 +84,8 @@ impl CodeStatsExtension {
                 &zed::LanguageServerInstallationStatus::Downloading,
             );
 
-            let download_type = match platform {
-                zed::Os::Windows => zed::DownloadedFileType::Zip,
-                _ => zed::DownloadedFileType::GzipTar,
-            };
-
-            zed::download_file(
-                &asset.download_url,
-                &version_dir,
-                download_type,
-            )
-            .map_err(|err| format!("failed to download file: {err}"))?;
+            zed::download_file(&asset.download_url, &version_dir, file_type)
+                .map_err(|err| format!("failed to download file: {err}"))?;
 
             let entries = fs::read_dir(".")
                 .map_err(|err| format!("failed to list working directory {err}"))?;
