@@ -47,6 +47,7 @@ languages = [
     "Julia",
     "KDL",
     "Kotlin",
+    "Lean 4",
     "Lua",
 	"Luau",
     "Markdown",
